@@ -10,6 +10,9 @@
 #include <graphics/mesh_instance.h>
 #include "primitive_builder.h"
 #include "GameObject.h"
+#include "PicrossLevel.h"
+#include "CollisionDetector.h"
+#include <input/keyboard.h>
 
 // FRAMEWORK FORWARD DECLARATIONS
 namespace gef
@@ -73,6 +76,29 @@ private:
 	bool isColliding;
 
 	PrimitiveBuilder* primitive_builder_;
+	
+	//Picross
+	PicrossLevel* pLevel;
+	float picrossSpacing;
+
+	//Input
+	gef::Vector2 touchPosition;
+	gef::Vector4 rayDirValues;
+	std::pair<int, bool> pushingControls[3];
+	gef::Keyboard::KeyCode destroyKey;
+	gef::Keyboard::KeyCode protectKey;
+	bool destroyButtonDown;
+	bool protectButtonDown;
+
+	//Camera
+	float cameraDist;
+	float cameraYOffset;
+	float cameraXZOffset;
+	float cameraRotAmount;
+
+	//Numbers (rendered on side of cube)
+	static constexpr int numNumbers = 4;
+	std::pair<gef::Scene*, gef::MeshInstance*> numberScenes[numNumbers];
 };
 
 #endif // _STARTER_APP_H

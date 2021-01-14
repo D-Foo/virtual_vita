@@ -205,6 +205,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\gef_abertay\graphics\ImGui\imgui.cpp" />
+    <ClCompile Include="..\..\..\gef_abertay\graphics\ImGui\imgui_demo.cpp" />
+    <ClCompile Include="..\..\..\gef_abertay\graphics\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\..\gef_abertay\graphics\ImGui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\..\..\gef_abertay\graphics\ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\..\..\gef_abertay\graphics\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="..\..\GameObject.cpp" />
     <ClCompile Include="..\..\main_d3d11.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|PSVita'">true</ExcludedFromBuild>
@@ -234,8 +240,20 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\VirtualVita.cpp" />
+    <ClCompile Include="CollisionDetector.cpp" />
+    <ClCompile Include="PicrossGameObject.cpp" />
+    <ClCompile Include="PicrossCube.cpp" />
+    <ClCompile Include="PicrossLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imconfig.h" />
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imgui.h" />
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imgui_internal.h" />
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imstb_textedit.h" />
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imstb_truetype.h" />
     <ClInclude Include="..\..\GameObject.h" />
     <ClInclude Include="..\..\primitive_builder.h" />
     <ClInclude Include="..\..\starter_app.h" />
@@ -256,6 +274,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\VirtualVita.h" />
+    <ClInclude Include="CollisionDetector.h" />
+    <ClInclude Include="PicrossGameObject.h" />
+    <ClInclude Include="PicrossCube.h" />
+    <ClInclude Include="PicrossLevel.h" />
+    <ClInclude Include="PicrossStructs.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

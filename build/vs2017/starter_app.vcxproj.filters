@@ -19,6 +19,12 @@
     <Filter Include="Source Files\VirtualSystem">
       <UniqueIdentifier>{2f0d3681-b5e9-49dd-9591-72e81eaa2510}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Picross">
+      <UniqueIdentifier>{1c3018e5-41c5-4788-9dbc-d643bfa48b66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{b1adf1e0-9b00-4045-9cb2-344c57f7cd0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\main_d3d11.cpp">
@@ -54,6 +60,36 @@
     <ClCompile Include="..\..\VirtualSystem_win32.cpp">
       <Filter>Source Files\VirtualSystem</Filter>
     </ClCompile>
+    <ClCompile Include="CollisionDetector.cpp">
+      <Filter>Source Files\Picross</Filter>
+    </ClCompile>
+    <ClCompile Include="PicrossCube.cpp">
+      <Filter>Source Files\Picross</Filter>
+    </ClCompile>
+    <ClCompile Include="PicrossLevel.cpp">
+      <Filter>Source Files\Picross</Filter>
+    </ClCompile>
+    <ClCompile Include="PicrossGameObject.cpp">
+      <Filter>Source Files\Picross</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\gef_abertay\graphics\ImGui\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\gef_abertay\graphics\ImGui\imgui_demo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\gef_abertay\graphics\ImGui\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\gef_abertay\graphics\ImGui\imgui_impl_dx11.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\gef_abertay\graphics\ImGui\imgui_impl_win32.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\gef_abertay\graphics\ImGui\imgui_widgets.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\primitive_builder.h">
@@ -88,6 +124,45 @@
     </ClInclude>
     <ClInclude Include="..\..\VirtualSystem_vita.h">
       <Filter>Header Files\VirtualSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionDetector.h">
+      <Filter>Source Files\Picross</Filter>
+    </ClInclude>
+    <ClInclude Include="PicrossCube.h">
+      <Filter>Source Files\Picross</Filter>
+    </ClInclude>
+    <ClInclude Include="PicrossLevel.h">
+      <Filter>Source Files\Picross</Filter>
+    </ClInclude>
+    <ClInclude Include="PicrossStructs.hpp">
+      <Filter>Source Files\Picross</Filter>
+    </ClInclude>
+    <ClInclude Include="PicrossGameObject.h">
+      <Filter>Source Files\Picross</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imgui.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imgui_impl_dx11.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imgui_impl_win32.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imgui_internal.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imstb_rectpack.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imstb_textedit.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gef_abertay\graphics\ImGui\imstb_truetype.h">
+      <Filter>ImGui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
