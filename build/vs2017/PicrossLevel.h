@@ -31,6 +31,7 @@ public:
 	bool setCameraPosPtr(gef::Vector4* cameraPos);
 	void setScale(float levelScale, PrimitiveBuilder* pBuilder);
 	void setLevelCenter(gef::Vector4 levelCenter, PrimitiveBuilder* pBuilder);
+	void setLevelCenter2(gef::Matrix44 levelCenter, PrimitiveBuilder* pBuilder, gef::Vector4 rotation = gef::Vector4::kZero);
 
 	void changeSelectedCube(int xDiff, int yDiff, int zDiff);
 	bool selectCubeByTouch(gef::Vector2 screenSize, gef::Vector2 touchPos, gef::Matrix44 projectionMatrix, gef::Matrix44 viewMatrix, gef::Vector4& rayDirValues, bool mark, Picross::CubeCoords& coords);
@@ -95,5 +96,6 @@ private:
 	std::vector<std::vector<std::vector<bool>>> shape;
 	std::vector<std::pair<gef::MeshInstance*, float>> numbers;	//3D numbers to render
 	std::pair<int, int> minMaxMembersShown[3];	//Where to start and stop rendering each axis
+	gef::Quaternion createQuaternion(gef::Vector4 rotation);
 };
 

@@ -13,7 +13,7 @@ PicrossLevel::PicrossLevel(PrimitiveBuilder* pBuilder, gef::Platform& platform, 
 	minMaxMembersShown[1] = std::pair<int, int>(0, 0);
 	minMaxMembersShown[2] = std::pair<int, int>(0, 0);
 
-	levelScale = 0.00875f;
+	levelScale = 0.00875f / 4.0f;
 	cubeSideScale = 1.0f;//0.25f;
 	cubeSideLength = 25.0f;
 	cubeSideSize = cubeSideLength * cubeSideScale * levelScale;
@@ -950,6 +950,50 @@ void PicrossLevel::setLevelCenter(gef::Vector4 levelCenter, PrimitiveBuilder* pB
 	updateRenderOrder();
 }
 
+void PicrossLevel::setLevelCenter2(gef::Matrix44 levelCenter, PrimitiveBuilder* pBuilder, gef::Vector4 rotation)
+{
+	//deleteCubes();
+
+	bool spacingEnabled = true;
+	gef::Vector4 levelCenterPos = levelCenter.GetTranslation();
+	//setScale(levelCenter.GetScale().x(), pBuilder);
+
+	for (int x = 0; x < rowSize; ++x)
+	{
+		for (int y = 0; y < columnSize; ++y)
+		{
+			for (int z = 0; z < depthSize; ++z)
+			{
+				//GetCube cube
+				PicrossCube* temp = cubes[x][y][z];
+				if (!spacingEnabled)
+				{
+					spacing = 0.0f;
+				}
+								
+				//Set position and mesh
+				gef::Vector4 localTranslation = gef::Vector4((static_cast<float>(x) * cubeSideSize) + x * spacing, (static_cast<float>(y) * cubeSideSize) + y * spacing, (static_cast<float>(z) * cubeSideSize) + z * spacing) + levelCenterPos;
+				localTranslation -= gef::Vector4((static_cast<float>(rowSize) * cubeSideSize) / 2.0f, (static_cast<float>(columnSize) * cubeSideSize) / 2.0f, (static_cast<float>(depthSize) * cubeSideSize) / 2.0f);
+				gef::Matrix44 transformMatrix = gef::Matrix44::kIdentity; 
+				transformMatrix.SetTranslation(localTranslation);
+				gef::Matrix44 rotMatrix = gef::Matrix44::kIdentity;
+				gef::Quaternion q = createQuaternion(rotation);
+				rotMatrix.Rotation(q);
+				//rotMatrix.RotationZ(gef::DegToRad(270));
+				gef::Matrix44 scaleMatrix = gef::Matrix44::kIdentity;
+				scaleMatrix.Scale(gef::Vector4(levelCenter.GetScale().x(), levelCenter.GetScale().y(), levelCenter.GetScale().z(), 1.0f));
+				gef::Matrix44 finalTransform;
+				finalTransform = rotMatrix * scaleMatrix * transformMatrix;
+				//finalTransform = levelCenter;
+				//finalTransform.SetTranslation(localTranslation);
+				temp->set_transform(finalTransform);
+			}
+		}
+	}
+
+	updateRenderOrder();
+}
+
 void PicrossLevel::initCubes(PrimitiveBuilder* pBuilder)
 {
 
@@ -1059,4 +1103,27 @@ void PicrossLevel::addNumber(PicrossCube* closestCube, std::pair<gef::Scene*, ge
 	temp->set_mesh(numberMeshes[numberNum].second->mesh());
 	temp->set_transform(finalTransform);
 	numbers.push_back(std::pair<gef::MeshInstance*, float>(temp, distanceFromCamera));
+}
+
+gef::Quaternion PicrossLevel::createQuaternion(gef::Vector4 rotation)
+{
+	float yaw = rotation.z();
+	float pitch = rotation.y();
+	float roll = rotation.x();
+
+	//Source from https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+	double cy = cos(yaw * 0.5);
+	double sy = sin(yaw * 0.5);
+	double cp = cos(pitch * 0.5);
+	double sp = sin(pitch * 0.5);
+	double cr = cos(roll * 0.5);
+	double sr = sin(roll * 0.5);
+
+	gef::Quaternion q;
+	q.w = cr * cp * cy + sr * sp * sy;
+	q.x = sr * cp * cy - cr * sp * sy;
+	q.y = cr * sp * cy + sr * cp * sy;
+	q.z = cr * cp * sy - sr * sp * cy;
+
+	return q;
 }

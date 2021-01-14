@@ -29,6 +29,9 @@ StarterApp::StarterApp(gef::Platform& platform) :
 	levelY= 0.0f;
 	levelZ = 3.0f;
 	levelScale = 0.00875f;
+	rotX = 0.0f;
+	rotY = 0.0f;
+	rotZ = 0.0f;
 }
 
 bool  StarterApp::sampleIsMarkerFound ( int idx )
@@ -201,12 +204,12 @@ bool StarterApp::Update(float frame_time)
 			levelScale = marker_transform.GetScale().x();
 
 			testObject_->set_transform ( marker_transform );
-			//pLevel->setLevelCenter(position, primitive_builder_);
+			pLevel->setLevelCenter2(marker_transform, primitive_builder_, gef::Vector4(gef::DegToRad(rotX), gef::DegToRad(rotY), gef::DegToRad(rotZ)));
 			
 		}
 	}
 
-	pLevel->setLevelCenter(gef::Vector4(levelX, levelY, -levelZ), primitive_builder_);
+	//pLevel->setLevelCenter(gef::Vector4(levelX, levelY, -levelZ), primitive_builder_);
 	//pLevel->setScale(levelScale, primitive_builder_);
 
 	//////////////////////////////////////////////////////////
@@ -290,6 +293,10 @@ void StarterApp::DrawHUD()
 	ImGui::DragFloat("LevelZ", &levelZ, 0.125f, -5.0f, 5.0f, "%.2f");
 	ImGui::DragFloat("LevelScale", &levelScale, 0.0625f / (2.0f * 100.0f), 0.0000000000000000000001f, 0.01f, "%.8f");
 
+
+	ImGui::DragFloat("RotX", &rotX, 0.5f, 0.0f, 360.0f, "%.2f");
+	ImGui::DragFloat("RotY", &rotY, 0.5f, 0.0f, 360.0f, "%.2f");
+	ImGui::DragFloat("RotZ", &rotZ, 0.5f, 0.0f, 360.0f, "%.2f");
 
 	ImGui::DragFloat("Spacing", &picrossSpacing, 0.5f, 0.0f, 10.0f, "%.2f");
 

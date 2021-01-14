@@ -116,6 +116,9 @@ private:
 	float levelY;
 	float levelZ;
 	float levelScale;
+	float rotX;
+	float rotY;
+	float rotZ;
 };
 
 #endif // _STARTER_APP_H
