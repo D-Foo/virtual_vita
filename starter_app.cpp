@@ -25,6 +25,10 @@ StarterApp::StarterApp(gef::Platform& platform) :
 	font_(NULL),
 	renderer_3d_(NULL)
 {
+	levelX = 0.625f;
+	levelY= 0.0f;
+	levelZ = 3.0f;
+	levelScale = 0.00875f;
 }
 
 bool  StarterApp::sampleIsMarkerFound ( int idx )
@@ -123,6 +127,7 @@ bool StarterApp::Update(float frame_time)
 	keyW = false;
 	destroyButtonDown = false;
 	protectButtonDown = false;
+	//pLevel->setLevelCenter(gef::Vector4(levelX, levelY, levelZ), primitive_builder_);
 
 	// read input devices
 	if (input_manager_)
@@ -190,11 +195,19 @@ bool StarterApp::Update(float frame_time)
 			position.set_y ( position.y () + 0.10f );
 			marker_transform.SetTranslation ( position );
 
+			levelX = marker_transform.GetTranslation().x();
+			levelY = marker_transform.GetTranslation().y();
+			levelZ = marker_transform.GetTranslation().z();
+			levelScale = marker_transform.GetScale().x();
+
 			testObject_->set_transform ( marker_transform );
+			//pLevel->setLevelCenter(position, primitive_builder_);
+			
 		}
 	}
 
-
+	pLevel->setLevelCenter(gef::Vector4(levelX, levelY, -levelZ), primitive_builder_);
+	//pLevel->setScale(levelScale, primitive_builder_);
 
 	//////////////////////////////////////////////////////////
 
@@ -213,7 +226,7 @@ void StarterApp::Render()
 
 	// draw meshes here
 	renderer_3d_->Begin();
-	//virtualSystem_->Render ( renderer_3d_ );
+	virtualSystem_->Render ( renderer_3d_ );
 
 	gef::Matrix44 view_matrix;
 	view_matrix.SetIdentity ();
@@ -271,6 +284,12 @@ void StarterApp::DrawHUD()
 
 	//Create ImGui Windows
 	ImGui::Begin("Test");
+
+	ImGui::DragFloat("LevelX", &levelX, 0.125f, -5.0f, 5.0f, "%.2f");
+	ImGui::DragFloat("LevelY", &levelY, 0.125f, -5.0f, 5.0f, "%.2f");
+	ImGui::DragFloat("LevelZ", &levelZ, 0.125f, -5.0f, 5.0f, "%.2f");
+	ImGui::DragFloat("LevelScale", &levelScale, 0.0625f / (2.0f * 100.0f), 0.0000000000000000000001f, 0.01f, "%.8f");
+
 
 	ImGui::DragFloat("Spacing", &picrossSpacing, 0.5f, 0.0f, 10.0f, "%.2f");
 

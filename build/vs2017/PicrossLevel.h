@@ -28,7 +28,9 @@ public:
 	void renderLevel(gef::Renderer3D* renderer);
 	void updateNumbers(int numNumbers, std::pair<gef::Scene*, gef::MeshInstance*>* numbers, gef::Vector4 cameraPos);
 	void setSpacing(float spacing);
-	void setCameraPosPtr(gef::Vector4* cameraPos);
+	bool setCameraPosPtr(gef::Vector4* cameraPos);
+	void setScale(float levelScale, PrimitiveBuilder* pBuilder);
+	void setLevelCenter(gef::Vector4 levelCenter, PrimitiveBuilder* pBuilder);
 
 	void changeSelectedCube(int xDiff, int yDiff, int zDiff);
 	bool selectCubeByTouch(gef::Vector2 screenSize, gef::Vector2 touchPos, gef::Matrix44 projectionMatrix, gef::Matrix44 viewMatrix, gef::Vector4& rayDirValues, bool mark, Picross::CubeCoords& coords);
@@ -38,7 +40,7 @@ public:
 	bool destroyCube(Picross::CubeCoords coords);
 	void updateRenderOrder();
 	void toggleCubeProtected(Picross::CubeCoords coords);
-	void updateLevelCenter(gef::Vector4 levelCenter, PrimitiveBuilder* pBuilder);
+	
 
 private:
 	
@@ -53,6 +55,8 @@ private:
 	float levelScale;
 	gef::Vector4 levelCenter;
 	float cubeSideSize;
+	float cubeSideScale;
+	float cubeSideLength;
 	float spacing;
 	int lives;
 	bool gameOver;

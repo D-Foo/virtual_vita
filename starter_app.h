@@ -110,6 +110,12 @@ private:
 	//Numbers (rendered on side of cube)
 	static constexpr int numNumbers = 4;
 	std::pair<gef::Scene*, gef::MeshInstance*> numberScenes[numNumbers];
+
+	//Temp
+	float levelX;
+	float levelY;
+	float levelZ;
+	float levelScale;
 };
 
 #endif // _STARTER_APP_H

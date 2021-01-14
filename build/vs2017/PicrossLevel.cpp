@@ -13,11 +13,12 @@ PicrossLevel::PicrossLevel(PrimitiveBuilder* pBuilder, gef::Platform& platform, 
 	minMaxMembersShown[1] = std::pair<int, int>(0, 0);
 	minMaxMembersShown[2] = std::pair<int, int>(0, 0);
 
-	float cubeSideScale = 0.25f;
-	float cubeSideLength = 25.0f;
-	cubeSideSize = cubeSideLength * cubeSideScale;
-	levelScale = 1.0f;
-	spacing = 0.0f;
+	levelScale = 0.00875f;
+	cubeSideScale = 1.0f;//0.25f;
+	cubeSideLength = 25.0f;
+	cubeSideSize = cubeSideLength * cubeSideScale * levelScale;
+	
+	spacing = 5.0f * levelScale;
 
 	cubeSize = gef::Vector4(cubeSideSize, cubeSideSize, cubeSideSize);
 	currentlySelectedCube[0] = { 0 };
@@ -42,8 +43,9 @@ PicrossLevel::PicrossLevel(PrimitiveBuilder* pBuilder, gef::Platform& platform, 
 	blueCubeMesh = pBuilder->CreateBoxMesh(gef::Vector4(cubeSideSize / 2.0f, cubeSideSize / 2.0f, cubeSideSize / 2.0f), gef::Vector4(0.0f, 0.0f, 0.0f), blueMat);
 
 	levelCenter = gef::Vector4((static_cast<float>(rowSize) * cubeSideSize) / 2.0f, (static_cast<float>(columnSize) * cubeSideSize) / 2.0f, (static_cast<float>(depthSize) * cubeSideSize) / 2.0f);
-	//float constLevelCenterVal = 0.0f;
-	//levelCenter = gef::Vector4(constLevelCenterVal, constLevelCenterVal, constLevelCenterVal);
+	//levelCenter = gef::Vector4(0.625f, 0.625f, 0.625f);
+	float constLevelCenterVal = 0.0f;
+	levelCenter = gef::Vector4(constLevelCenterVal, constLevelCenterVal, constLevelCenterVal);
 
 
 	initCubes(pBuilder);
@@ -419,9 +421,24 @@ void PicrossLevel::setSpacing(float spacing)
 	updateRenderOrder();
 }
 
-void PicrossLevel::setCameraPosPtr(gef::Vector4* cameraPos)
+bool PicrossLevel::setCameraPosPtr(gef::Vector4* cameraPos)
 {
-	this->cameraPos = cameraPos;
+	if (cameraPos != nullptr)
+	{
+		this->cameraPos = cameraPos;
+		return true;
+	}
+	return false;
+}
+
+void PicrossLevel::setScale(float levelScale, PrimitiveBuilder* pBuilder)
+{
+	this->levelScale = levelScale;
+	spacing = 5.0f * levelScale;
+	cubeSideSize = cubeSideLength * cubeSideScale * levelScale;
+	deleteCubes();
+	initCubes(pBuilder);
+	updateRenderOrder();
 }
 
 //TODO: Will have to handle missing rows/cubes
@@ -707,8 +724,11 @@ inline void PicrossLevel::deleteCubes()
 			{
 				delete(c);
 			}
+			v2.clear();
 		}
+		v1.clear();
 	}
+	cubes.clear();
 }
 
 void PicrossLevel::GetScreenPosRay(const gef::Vector2& screen_position, const gef::Matrix44& projection, const gef::Matrix44& view, gef::Vector4& start_point, gef::Vector4& direction, float screen_width, float screen_height, float ndc_z_min)
@@ -922,17 +942,16 @@ void PicrossLevel::toggleCubeProtected(Picross::CubeCoords coords)
 	}
 }
 
-void PicrossLevel::updateLevelCenter(gef::Vector4 levelCenter, PrimitiveBuilder* pBuilder)
+void PicrossLevel::setLevelCenter(gef::Vector4 levelCenter, PrimitiveBuilder* pBuilder)
 {
 	this->levelCenter = levelCenter;
 	deleteCubes();
 	initCubes(pBuilder);
+	updateRenderOrder();
 }
 
 void PicrossLevel::initCubes(PrimitiveBuilder* pBuilder)
 {
-
-
 
 	bool spacingEnabled = true;
 
@@ -952,7 +971,7 @@ void PicrossLevel::initCubes(PrimitiveBuilder* pBuilder)
 					spacing = 0.0f;
 				}
 
-				//Set postiion and mesh
+				//Set position and mesh
 				temp->setPosition(gef::Vector4((static_cast<float>(x) * cubeSideSize) + x * spacing, (static_cast<float>(y) * cubeSideSize) + y * spacing, (static_cast<float>(z) * cubeSideSize) + z * spacing) - levelCenter);
 				temp->set_mesh(defaultCubeMesh);
 
@@ -976,7 +995,7 @@ void PicrossLevel::addNumber(PicrossCube* closestCube, std::pair<gef::Scene*, ge
 	gef::Matrix44 rotMatrix2 = gef::Matrix44::kIdentity;
 	gef::Matrix44 scaleMatrix = gef::Matrix44::kIdentity;
 	gef::Matrix44 transformMatrix = gef::Matrix44::kIdentity;
-	float scaleF = 0.1f;
+	float scaleF = 0.1f * levelScale;
 	scaleMatrix.Scale(gef::Vector4(scaleF, scaleF, scaleF, 1.0f));
 
 	//Rotate number
