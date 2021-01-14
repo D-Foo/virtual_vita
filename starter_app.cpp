@@ -48,6 +48,8 @@ void StarterApp::Init()
 	SetupCamera();
 	SetupLights();
 
+	loadScenes();
+
 	virtualSystem_ = VirtualSystem::Create ();
 	virtualSystem_->Init ( primitive_builder_ );
 
@@ -73,7 +75,7 @@ void StarterApp::Init()
 
 	///////////////////////////////////////////////////////
 
-
+	initPLevel();
 
 }
 
@@ -110,13 +112,18 @@ void StarterApp::CleanUp()
 	delete renderer_3d_;
 	renderer_3d_ = NULL;
 
-
+	delete pLevel;
+	pLevel = NULL;
 
 }
 
 bool StarterApp::Update(float frame_time)
 {
 	fps_ = 1.0f / frame_time;
+	keyW = false;
+	destroyButtonDown = false;
+	protectButtonDown = false;
+
 	// read input devices
 	if (input_manager_)
 	{
@@ -206,7 +213,7 @@ void StarterApp::Render()
 
 	// draw meshes here
 	renderer_3d_->Begin();
-	virtualSystem_->Render ( renderer_3d_ );
+	//virtualSystem_->Render ( renderer_3d_ );
 
 	gef::Matrix44 view_matrix;
 	view_matrix.SetIdentity ();
@@ -217,6 +224,8 @@ void StarterApp::Render()
 
 
 	renderer_3d_->DrawMesh ( *testObject_ );
+
+	pLevel->renderLevel(renderer_3d_);
 
 	////////////////////////////////////////////////////////////
 
@@ -254,6 +263,43 @@ void StarterApp::DrawHUD()
 		font_->RenderText(sprite_renderer_, gef::Vector4(850.0f, 510.0f, -0.9f), 1.0f, 0xffffffff, gef::TJ_LEFT, "FPS: %.1f", fps_);
 		
 	}
+
+	// Start the Dear ImGui frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	//Create ImGui Windows
+	ImGui::Begin("Test");
+
+	ImGui::DragFloat("Spacing", &picrossSpacing, 0.5f, 0.0f, 10.0f, "%.2f");
+
+	ImGui::Text("RayDirection: (%f, %f, %f, %F)", rayDirValues.x(), rayDirValues.y(), rayDirValues.z(), rayDirValues.w(), "%.2f");
+
+	std::string axesLabels[3] = { "X", "Y", "Z" };
+
+	for (int i = 0; i < 3; ++i)
+	{
+		std::string label = "";
+		label.append(axesLabels[i]);
+		label.append(" Axis");
+		if (ImGui::InputInt(label.c_str(), &pushingControls[i].first))
+		{
+			pLevel->pushIntoLevel(i, pushingControls[i].second, pushingControls[i].first);
+			pLevel->updateNumbers(numNumbers, numberScenes, camera_eye_);
+		}
+		if (ImGui::Button("Reverse Direction"))
+		{
+			pushingControls[i].second = !pushingControls[i].second;
+		}
+	}
+	ImGui::End();
+
+
+	//Assemble Together Draw Data
+	ImGui::Render();
+	//Render Draw Data
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
 void StarterApp::SetupLights()
@@ -270,7 +316,8 @@ void StarterApp::SetupLights()
 void StarterApp::SetupCamera()
 {
 	// initialise the camera settings
-	camera_eye_ = gef::Vector4(5.0f, 5.0f, 215.0f);
+	bool newCameraPos = true;
+	newCameraPos ? camera_eye_ = gef::Vector4(5.0f, 5.0f, -350.0f) :	camera_eye_ = gef::Vector4(5.0f, 5.0f, 215.0f);
 	camera_lookat_ = gef::Vector4(0.0f, 0.0f, 0.0f);
 	camera_up_ = gef::Vector4(0.0f, 1.0f, 0.0f);
 	camera_fov_ = gef::DegToRad(45.0f);
@@ -287,6 +334,66 @@ void StarterApp::UpdateCamera ()
 	camera_fov_ = gef::DegToRad ( 45.0f );
 	near_plane_ = 0.01f;
 	far_plane_ = 1000.f;
+}
+
+void StarterApp::loadScenes()
+{
+
+	//Number Scenes
+	gef::Matrix44 finalTransform = gef::Matrix44::kIdentity;
+	gef::Matrix44 rotMatrix = gef::Matrix44::kIdentity;
+	gef::Matrix44 scaleMatrix = gef::Matrix44::kIdentity;
+	gef::Matrix44 transformMatrix = gef::Matrix44::kIdentity;
+	float scaleF = 10.0f;
+	float rotF = 90.0f;
+	rotMatrix.RotationZ(gef::DegToRad(rotF));
+	scaleMatrix.Scale(gef::Vector4(scaleF, scaleF, scaleF, 1.0f));
+	transformMatrix.SetTranslation(gef::Vector4(100.0f, 100.0f, 0.0f));
+	finalTransform = rotMatrix * scaleMatrix * transformMatrix;
+
+	for (int i = 0; i < numNumbers; ++i)
+	{
+		numberScenes[i].first = nullptr;
+		numberScenes[i].second = nullptr;
+
+		numberScenes[i].first = new gef::Scene();
+		numberScenes[i].second = new gef::MeshInstance();
+		std::string numFilepath = "number";
+		numFilepath.append(std::to_string(i + 1));
+		numFilepath.append(".scn");
+
+		numberScenes[i].first->ReadSceneFromFile(platform_, numFilepath.c_str());
+		numberScenes[i].first->CreateMaterials(platform_);
+		numberScenes[i].second->set_mesh(GetFirstMesh(numberScenes[i].first));
+
+		numberScenes[i].second->set_transform(finalTransform);
+	}
+}
+
+void StarterApp::initPLevel()
+{
+	pLevel = new PicrossLevel(primitive_builder_, platform_, Picross::getLayout1());
+	pLevel->setCameraPosPtr(&camera_eye_);
+	picrossSpacing = 0.0f;
+
+
+	pLevel->setSpacing(picrossSpacing);
+	pLevel->updateNumbers(numNumbers, &numberScenes[0], camera_eye_);
+	keyW = false;
+	//pLevel->pushIntoLevel(false, true, false, false, false, true, 2);
+	for (int i = 0; i < 3; ++i)
+	{
+		pushingControls[i] = std::pair<int, bool>(0, false);
+	}
+
+	destroyButtonDown = false;
+	protectButtonDown = false;
+	destroyKey = gef::Keyboard::KC_R;
+	protectKey = gef::Keyboard::KC_P;
+	cameraDist = 350.0f;
+	cameraYOffset = 5.0f;
+	cameraXZOffset = 5.0f;
+	cameraRotAmount = 180.0f;
 }
 
 gef::Mesh* StarterApp::GetFirstMesh ( gef::Scene* scene )

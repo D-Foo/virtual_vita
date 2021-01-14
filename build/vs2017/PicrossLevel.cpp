@@ -13,8 +13,9 @@ PicrossLevel::PicrossLevel(PrimitiveBuilder* pBuilder, gef::Platform& platform, 
 	minMaxMembersShown[1] = std::pair<int, int>(0, 0);
 	minMaxMembersShown[2] = std::pair<int, int>(0, 0);
 
-
-	cubeSideSize = 25.0f;
+	float cubeSideScale = 0.25f;
+	float cubeSideLength = 25.0f;
+	cubeSideSize = cubeSideLength * cubeSideScale;
 	levelScale = 1.0f;
 	spacing = 0.0f;
 
@@ -35,9 +36,15 @@ PicrossLevel::PicrossLevel(PrimitiveBuilder* pBuilder, gef::Platform& platform, 
 		blueMat[i] = new gef::Material();
 		blueMat[i]->set_colour(0xffff0000);
 	}
-	
+
+	defaultCubeMesh = pBuilder->CreateBoxMesh(gef::Vector4(cubeSideSize / 2.0f, cubeSideSize / 2.0f, cubeSideSize / 2.0f));
+	redCubeMesh = pBuilder->CreateBoxMesh(gef::Vector4(cubeSideSize / 2.0f, cubeSideSize / 2.0f, cubeSideSize / 2.0f), gef::Vector4(0.0f, 0.0f, 0.0f), redMat);
+	blueCubeMesh = pBuilder->CreateBoxMesh(gef::Vector4(cubeSideSize / 2.0f, cubeSideSize / 2.0f, cubeSideSize / 2.0f), gef::Vector4(0.0f, 0.0f, 0.0f), blueMat);
 
 	levelCenter = gef::Vector4((static_cast<float>(rowSize) * cubeSideSize) / 2.0f, (static_cast<float>(columnSize) * cubeSideSize) / 2.0f, (static_cast<float>(depthSize) * cubeSideSize) / 2.0f);
+	//float constLevelCenterVal = 0.0f;
+	//levelCenter = gef::Vector4(constLevelCenterVal, constLevelCenterVal, constLevelCenterVal);
+
 
 	initCubes(pBuilder);
 	//changeSelectedCube(0, 0, 0);	
@@ -47,6 +54,27 @@ PicrossLevel::PicrossLevel(PrimitiveBuilder* pBuilder, gef::Platform& platform, 
 
 PicrossLevel::~PicrossLevel()
 {
+	//Clean up mats
+	for (int i = 0; i < 6; ++i)
+	{
+		delete(redMat[i]);
+		delete(blueMat[i]);
+	}
+	delete redMat;
+	delete blueMat;
+
+	//Clean up numbers
+	for (auto& n : numbers)
+	{
+		delete(n.first);
+	}
+
+	//Clean up cube meshes
+	delete(redCubeMesh);
+	delete(blueCubeMesh);
+
+	//Clean up cubes
+	deleteCubes();
 }
 
 void PicrossLevel::renderLevel(gef::Renderer3D* renderer)
@@ -669,6 +697,20 @@ bool PicrossLevel::destroyCube(Picross::CubeCoords coords)
 	
 }
 
+inline void PicrossLevel::deleteCubes()
+{
+	for (auto& v1 : cubes)
+	{
+		for (auto& v2 : v1)
+		{
+			for (auto& c : v2)
+			{
+				delete(c);
+			}
+		}
+	}
+}
+
 void PicrossLevel::GetScreenPosRay(const gef::Vector2& screen_position, const gef::Matrix44& projection, const gef::Matrix44& view, gef::Vector4& start_point, gef::Vector4& direction, float screen_width, float screen_height, float ndc_z_min)
 {
 	gef::Vector2 ndc;
@@ -880,11 +922,17 @@ void PicrossLevel::toggleCubeProtected(Picross::CubeCoords coords)
 	}
 }
 
+void PicrossLevel::updateLevelCenter(gef::Vector4 levelCenter, PrimitiveBuilder* pBuilder)
+{
+	this->levelCenter = levelCenter;
+	deleteCubes();
+	initCubes(pBuilder);
+}
+
 void PicrossLevel::initCubes(PrimitiveBuilder* pBuilder)
 {
 
-	redCubeMesh = pBuilder->CreateBoxMesh(gef::Vector4(cubeSideSize / 2.0f, cubeSideSize / 2.0f, cubeSideSize / 2.0f), gef::Vector4(0.0f, 0.0f, 0.0f), redMat);
-	blueCubeMesh = pBuilder->CreateBoxMesh(gef::Vector4(cubeSideSize / 2.0f, cubeSideSize / 2.0f, cubeSideSize / 2.0f), gef::Vector4(0.0f, 0.0f, 0.0f), blueMat);
+
 
 	bool spacingEnabled = true;
 
@@ -906,8 +954,6 @@ void PicrossLevel::initCubes(PrimitiveBuilder* pBuilder)
 
 				//Set postiion and mesh
 				temp->setPosition(gef::Vector4((static_cast<float>(x) * cubeSideSize) + x * spacing, (static_cast<float>(y) * cubeSideSize) + y * spacing, (static_cast<float>(z) * cubeSideSize) + z * spacing) - levelCenter);
-				defaultCubeMesh = pBuilder->CreateBoxMesh(gef::Vector4(cubeSideSize / 2.0f, cubeSideSize / 2.0f, cubeSideSize / 2.0f));
-
 				temp->set_mesh(defaultCubeMesh);
 
 				//Store

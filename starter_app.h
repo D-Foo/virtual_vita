@@ -13,6 +13,9 @@
 #include "PicrossLevel.h"
 #include "CollisionDetector.h"
 #include <input/keyboard.h>
+#include <graphics/ImGui/imgui.h>
+#include <graphics/ImGui/imgui_impl_dx11.h>
+#include <graphics/ImGui/imgui_impl_win32.h>
 
 // FRAMEWORK FORWARD DECLARATIONS
 namespace gef
@@ -48,6 +51,8 @@ private:
 	bool sampleIsMarkerFound ( int idx );
 	void sampleGetTransform ( int idx, gef::Matrix44* mat );
 	void UpdateCamera ();
+	void loadScenes();
+	void initPLevel();
 
 	gef::Mesh* GetFirstMesh ( gef::Scene* scene );
 	void ReadSceneAndAssignFirstMesh ( const char* filename, gef::Scene** scene, gef::Mesh** mesh );
@@ -80,6 +85,12 @@ private:
 	//Picross
 	PicrossLevel* pLevel;
 	float picrossSpacing;
+
+
+	//Collision Detection
+	CollisionDetector collisionDetector;
+	bool collision;
+	bool keyW;
 
 	//Input
 	gef::Vector2 touchPosition;
